@@ -1,0 +1,243 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+
+<head>
+<script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-1.3.4.min.js"></script>	<link rel="stylesheet" href="{% static 'css/stylesheet.css' %}">
+	<title>GitStats</title>
+</head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <!-- bootstrap -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+
+
+<style>
+	html,
+	body,
+	h1,
+	h2,
+	h3,
+	h4,
+	h5 {
+		font-family: "Raleway", sans-serif
+	}
+</style>
+
+<body class="w3-light-grey">
+	<script>
+		function changeGraph(graphType) {
+			let currentRepo = '{{ repo_name|safe }}';
+			let currentOwner = '{{ owner_name|safe }}';
+			let url = "displayData?type=" + graphType + "&repoOwner=" + currentOwner + "&repoName=" + currentRepo + "/";
+			window.location.href = url;
+		}
+	</script>
+
+	<!-- Top container -->
+	<nav class="navbar-expand-lg  w3-bar w3-top w3-green w3-large" style="z-index:4">
+		<button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey w3-right"
+			onclick="w3_open();"><i class="fa fa-bars"></i></button>
+		<!-- <span class="w3-bar-item w3-left"><a href="/"><img src="/static/images/gitstats.svg" class="w3-margin-right" style="width:46px"></a></span> -->
+		<div class="navbar-collapse" id="navbarTogglerDemo01">
+			<span class="w3-bar-item w3-left"><a href="/"><img src="/static/images/gitstats.svg" class="w3-margin-right" style="width:46px"></a></span>
+
+			<form class="form-inline my-2 my-lg-0 input-group" form id="form_submit" action="" method="POST" >
+			  <input class="form-control mr-sm-2" name="template_search" type="search" placeholder="Search" aria-label="Search">
+			  <button class="btn btn-outline-success my-2 my-sm-0 bg-light" type="submit" onclick="document.getElementById('form_submit').submit()">Search</button>
+
+			</form>
+		  </div>
+		</nav>
+
+	<!-- Sidebar/menu -->
+	<nav class="w3-sidebar w3-collapse w3-white w3-animate-right" style="right:0%;z-index:3;width:300px;" id="mySidebar"><br>
+		<div class="w3-container w3-row">
+			<div class="w3-col s4">
+				<a href="/"><img src="/static/images/gitstats.svg" class="w3-margin-right" style="width:46px"></a>
+			</div>
+			<div class="w3-col s8 w3-bar">
+				<span>Welcome, <strong>Harsha</strong></span><br>
+				<!-- <a href="#" class="w3-bar-item w3-button"><i class="fa fa-envelope"></i></a> -->
+				<!-- <a href="#" class="w3-bar-item w3-button"><i class="fa fa-user" style="opacity:0.1;"></i></a>
+				<a href="#" class="w3-bar-item w3-button"><i class="fa fa-cog" style="opacity:0.1;"></i></a> -->
+			</div>
+		</div>
+		<hr>
+		<div class="w3-container">
+			<h6>Dashboard</h6>
+		</div>
+		<div class="w3-bar-block">
+			<a class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black"
+				onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i> Close Menu</a>
+				<a onclick="changeGraph('pie')" class="w3-bar-item w3-button w3-padding w3-padding"><img src="/static/images/non_gh_icons/pie-chart.svg" class="w3-margin-right" style="height:18px"> Pie Chart</a>
+				<a onclick="" class="w3-bar-item w3-button w3-blue"><img src="/static/images/gh_icons/graph.svg" class="w3-margin-right" style="height:18px;"> Timeline</a>
+				<a onclick="changeGraph('contributor')" class="w3-bar-item w3-button w3-padding"><img src="/static/images/gh_icons/person.svg" class="w3-margin-right" style="height:18px;">Contributor</a>
+		</div>
+	</nav>
+
+
+	<!-- Overlay effect when opening sidebar on small screens -->
+	<div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer"
+		title="close side menu" id="myOverlay"></div>
+
+	<!-- !PAGE CONTENT! -->
+	<div class="w3-main" style="margin-right:300px;margin-top:43px;">
+
+		<!-- Header -->
+		<header class="w3-container" style="padding-top:22px">
+			<h5><b><img src="/static/images/gh_icons/dashboard.svg" class="w3-margin-right" style="height:22px">Dashboard</b></h5>
+		</header>
+
+		<div class="w3-row-padding w3-margin-bottom">
+			<table class="table">
+					<thead>
+						<tr>
+						<th scope="col">Repository</th>
+						<th scope="col">Owner</th>
+						<th scope="col">Date created</th>
+						<th scope="col">last_modified</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+						<td>{{ repo_name }}</td>
+						<td>{{ owner_name }}</td>
+						<td>{{ repo_created_date }}</td>
+						<td>{{ repo_updated_date }}</td>
+						</tr>
+						<tr><td colspan="4" class="text-center">{{repo_description}}</td></tr>
+					</tbody>
+			</table>
+		</div>
+
+
+		<div class="w3-panel">
+			<div class="w3-row-padding" style="margin:0 -16px">
+				<!-- timeline -->
+					<h5>timeline</h5>
+					<div class="w3-container" id="startdiv">    
+      
+        
+          
+          
+            
+              <div class="bk-root" id="90b9c92f-eba2-4faf-af61-64f58f2a586b" data-root-id="1001"></div>
+            
+          
+        
+      
+      
+        <script type="application/json" id="1091">
+          {"64748c7d-eecd-4f30-9dce-eb2527e83e7a":{"roots":{"references":[{"attributes":{"fill_color":{"field":"fill_color"},"height":{"units":"data","value":1},"line_color":{"field":"line_color"},"width":{"units":"data","value":1},"x":{"field":"x"},"y":{"field":"y"}},"id":"1024","type":"Rect"},{"attributes":{"active_drag":"auto","active_inspect":"auto","active_multi":null,"active_scroll":"auto","active_tap":"auto","tools":[{"id":"1020","type":"HoverTool"}]},"id":"1021","type":"Toolbar"},{"attributes":{"data_source":{"id":"1023","type":"ColumnDataSource"},"glyph":{"id":"1024","type":"Rect"},"hover_glyph":null,"muted_glyph":null,"nonselection_glyph":{"id":"1025","type":"Rect"},"selection_glyph":null,"view":{"id":"1027","type":"CDSView"}},"id":"1026","type":"GlyphRenderer"},{"attributes":{"formatter":{"id":"1030","type":"CategoricalTickFormatter"},"ticker":{"id":"1013","type":"CategoricalTicker"}},"id":"1012","type":"CategoricalAxis"},{"attributes":{"callback":null,"factors":["Week 1","Week 2","Week 3","Week 4","Week 5","Week 6","Week 7","Week 8","Week 9","Week 10","Week 11","Week 12","Week 13","Week 14","Week 15","Week 16"]},"id":"1004","type":"FactorRange"},{"attributes":{},"id":"1032","type":"CategoricalTickFormatter"},{"attributes":{"source":{"id":"1023","type":"ColumnDataSource"}},"id":"1027","type":"CDSView"},{"attributes":{"callback":null},"id":"1020","type":"HoverTool"},{"attributes":{"text":"Timeline"},"id":"1002","type":"Title"},{"attributes":{},"id":"1034","type":"Selection"},{"attributes":{},"id":"1010","type":"CategoricalScale"},{"attributes":{},"id":"1008","type":"CategoricalScale"},{"attributes":{"fill_alpha":{"value":0.1},"fill_color":{"value":"#1f77b4"},"height":{"units":"data","value":1},"line_alpha":{"value":0.1},"line_color":{"value":"#1f77b4"},"width":{"units":"data","value":1},"x":{"field":"x"},"y":{"field":"y"}},"id":"1025","type":"Rect"},{"attributes":{},"id":"1033","type":"UnionRenderers"},{"attributes":{"formatter":{"id":"1032","type":"CategoricalTickFormatter"},"ticker":{"id":"1017","type":"CategoricalTicker"}},"id":"1016","type":"CategoricalAxis"},{"attributes":{"below":[{"id":"1012","type":"CategoricalAxis"}],"center":[{"id":"1015","type":"Grid"},{"id":"1019","type":"Grid"}],"left":[{"id":"1016","type":"CategoricalAxis"}],"renderers":[{"id":"1026","type":"GlyphRenderer"}],"sizing_mode":"scale_width","title":{"id":"1002","type":"Title"},"toolbar":{"id":"1021","type":"Toolbar"},"toolbar_location":null,"x_range":{"id":"1004","type":"FactorRange"},"x_scale":{"id":"1008","type":"CategoricalScale"},"y_range":{"id":"1006","type":"FactorRange"},"y_scale":{"id":"1010","type":"CategoricalScale"}},"id":"1001","subtype":"Figure","type":"Plot"},{"attributes":{"ticker":{"id":"1013","type":"CategoricalTicker"}},"id":"1015","type":"Grid"},{"attributes":{"dimension":1,"ticker":{"id":"1017","type":"CategoricalTicker"}},"id":"1019","type":"Grid"},{"attributes":{"callback":null,"factors":["mpociot","freekmurze","MrRio","AlexVanderbist","willemvb","Gummibeer","sebastiandedeyne","mikaelpopowicz","Te7a-Houdini","nunomaduro","Other"]},"id":"1006","type":"FactorRange"},{"attributes":{},"id":"1030","type":"CategoricalTickFormatter"},{"attributes":{"callback":null,"data":{"fill_color":["dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue","dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue","dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue","dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue","dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue","dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue","dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue","dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue","dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue","dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue","dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue","dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue","dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue","dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue","dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue","dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue"],"line_color":["dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue","dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue","dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue","dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue","dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue","dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue","dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue","dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue","dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue","dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue","dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue","dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue","dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue","dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue","dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue","dimgray","lightslategray","papayawhip","darkslategray","black","lightsteelblue","powderblue","lightblue","skyblue","lightskyblue","deepskyblue"],"x":["Week 1","Week 1","Week 1","Week 1","Week 1","Week 1","Week 1","Week 1","Week 1","Week 1","Week 1","Week 2","Week 2","Week 2","Week 2","Week 2","Week 2","Week 2","Week 2","Week 2","Week 2","Week 2","Week 3","Week 3","Week 3","Week 3","Week 3","Week 3","Week 3","Week 3","Week 3","Week 3","Week 3","Week 4","Week 4","Week 4","Week 4","Week 4","Week 4","Week 4","Week 4","Week 4","Week 4","Week 4","Week 5","Week 5","Week 5","Week 5","Week 5","Week 5","Week 5","Week 5","Week 5","Week 5","Week 5","Week 6","Week 6","Week 6","Week 6","Week 6","Week 6","Week 6","Week 6","Week 6","Week 6","Week 6","Week 7","Week 7","Week 7","Week 7","Week 7","Week 7","Week 7","Week 7","Week 7","Week 7","Week 7","Week 8","Week 8","Week 8","Week 8","Week 8","Week 8","Week 8","Week 8","Week 8","Week 8","Week 8","Week 9","Week 9","Week 9","Week 9","Week 9","Week 9","Week 9","Week 9","Week 9","Week 9","Week 9","Week 10","Week 10","Week 10","Week 10","Week 10","Week 10","Week 10","Week 10","Week 10","Week 10","Week 10","Week 11","Week 11","Week 11","Week 11","Week 11","Week 11","Week 11","Week 11","Week 11","Week 11","Week 11","Week 12","Week 12","Week 12","Week 12","Week 12","Week 12","Week 12","Week 12","Week 12","Week 12","Week 12","Week 13","Week 13","Week 13","Week 13","Week 13","Week 13","Week 13","Week 13","Week 13","Week 13","Week 13","Week 14","Week 14","Week 14","Week 14","Week 14","Week 14","Week 14","Week 14","Week 14","Week 14","Week 14","Week 15","Week 15","Week 15","Week 15","Week 15","Week 15","Week 15","Week 15","Week 15","Week 15","Week 15","Week 16","Week 16","Week 16","Week 16","Week 16","Week 16","Week 16","Week 16","Week 16","Week 16","Week 16"],"y":["mpociot","None","None","None","None","Gummibeer","sebastiandedeyne","None","Te7a-Houdini","nunomaduro","Other","mpociot","None","None","None","None","Gummibeer","sebastiandedeyne","None","Te7a-Houdini","nunomaduro","Other","None","freekmurze","MrRio","None","willemvb","Gummibeer","None","mikaelpopowicz","Te7a-Houdini","nunomaduro","Other","None","freekmurze","MrRio","None","willemvb","Gummibeer","None","mikaelpopowicz","Te7a-Houdini","nunomaduro","Other","None","None","None","AlexVanderbist","None","Gummibeer","None","None","Te7a-Houdini","nunomaduro","Other","None","None","None","AlexVanderbist","None","Gummibeer","None","None","Te7a-Houdini","nunomaduro","Other","None","None","MrRio","AlexVanderbist","None","None","None","mikaelpopowicz","Te7a-Houdini","nunomaduro","Other","None","None","MrRio","AlexVanderbist","None","None","None","mikaelpopowicz","Te7a-Houdini","nunomaduro","Other","None","None","None","None","willemvb","Gummibeer","None","None","Te7a-Houdini","nunomaduro","Other","None","None","None","None","willemvb","Gummibeer","None","None","Te7a-Houdini","nunomaduro","Other","None","None","MrRio","None","None","None","None","None","Te7a-Houdini","nunomaduro","Other","None","None","MrRio","None","None","None","None","None","Te7a-Houdini","nunomaduro","Other","None","freekmurze","None","None","None","None","None","None","Te7a-Houdini","nunomaduro","Other","None","freekmurze","None","None","None","None","None","None","Te7a-Houdini","nunomaduro","Other","None","None","None","None","None","None","None","None","Te7a-Houdini","nunomaduro","Other","None","None","None","None","None","None","None","None","Te7a-Houdini","nunomaduro","Other"]},"selected":{"id":"1034","type":"Selection"},"selection_policy":{"id":"1033","type":"UnionRenderers"}},"id":"1023","type":"ColumnDataSource"},{"attributes":{},"id":"1013","type":"CategoricalTicker"},{"attributes":{},"id":"1017","type":"CategoricalTicker"}],"root_ids":["1001"]},"title":"Bokeh Application","version":"1.3.4"}}
+        </script>
+        <script type="text/javascript">
+          (function() {
+            var fn = function() {
+              Bokeh.safely(function() {
+                (function(root) {
+                  function embed_document(root) {
+                    
+                  var docs_json = document.getElementById('1091').textContent;
+                  var render_items = [{"docid":"64748c7d-eecd-4f30-9dce-eb2527e83e7a","roots":{"1001":"90b9c92f-eba2-4faf-af61-64f58f2a586b"}}];
+                  root.Bokeh.embed.embed_items(docs_json, render_items);
+                
+                  }
+                  if (root.Bokeh !== undefined) {
+                    embed_document(root);
+                  } else {
+                    var attempts = 0;
+                    var timer = setInterval(function(root) {
+                      if (root.Bokeh !== undefined) {
+                        embed_document(root);
+                        clearInterval(timer);
+                      }
+                      attempts++;
+                      if (attempts > 100) {
+                        console.log("Bokeh: ERROR: Unable to run BokehJS code because BokehJS library is missing");
+                        clearInterval(timer);
+                      }
+                    }, 10, root)
+                  }
+                })(window);
+              });
+            };
+            if (document.readyState != "loading") fn();
+            else document.addEventListener("DOMContentLoaded", fn);
+          })();
+        </script>
+    
+</div><div class="w3-container" id="enddiv">
+				</div>
+				<!-- table -->
+				<div class="w3-half">
+					<h5></h5>
+				</div>
+			</div>
+		</div>
+
+		<br>
+
+		<!-- Footer -->
+<!--		<footer class="w3-container w3-dark-grey">-->
+<!--			<div class="w3-padding-32"></div>-->
+<!--		</footer>-->
+
+		<!-- End page content -->
+	</div>
+
+	<script>
+		// Get the Sidebar
+		var mySidebar = document.getElementById("mySidebar");
+
+		// Get the DIV with overlay effect
+		var overlayBg = document.getElementById("myOverlay");
+
+		// Toggle between showing and hiding the sidebar, and add overlay effect
+		function w3_open() {
+			if (mySidebar.style.display === 'block') {
+				mySidebar.style.display = 'none';
+				overlayBg.style.display = "none";
+			} else {
+				mySidebar.style.display = 'block';
+				overlayBg.style.display = "block";
+			}
+		}
+
+		// Close the sidebar with the close button
+		function w3_close() {
+			mySidebar.style.display = "none";
+			overlayBg.style.display = "none";
+		}
+	</script>
+
+<!-- Footer -->
+<footer class="page-footer font-small blue">
+  <!-- Copyright -->
+  <div class="footer-copyright text-center py-3">
+	  <p>Developed by Team Waterfall</p>
+		© 2019 Copyright:<a a href="/"> Waterfall</a>
+
+  </div>
+  <!-- Copyright -->
+</footer>
+<!-- Footer -->
+
+</body>
+
+</html>

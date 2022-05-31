@@ -1,0 +1,248 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+
+<head>
+	<link rel="stylesheet" href="{% static 'css/stylesheet.css' %}">
+	<title>GitStats</title>
+</head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <!-- bootstrap -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+
+
+<style>
+	html,
+	body,
+	h1,
+	h2,
+	h3,
+	h4,
+	h5 {
+		font-family: "Raleway", sans-serif
+	}
+</style>
+
+<body class="w3-light-grey" onload="updateSelection()">
+	{% load i %}
+	<script>
+		function changeGraph(graphType) {
+			let currentRepo = '{{ repo_name|safe }}';
+			let currentOwner = '{{ owner_name|safe }}';
+			let url = "displayData?type=" + graphType + "&repoOwner=" + currentOwner + "&repoName=" + currentRepo + "/";
+			window.location.href = url;
+		}
+	</script>
+	<script>
+	function updateSelection() {
+		let currentIndex = document.getElementById("selector").selectedIndex
+
+		let contributor_names = {{ contributor_names|safe }};
+
+		let contributor_emails = {{ contributor_emails|safe|default_if_none:'' }};
+		let contributor_issues_assigned = {{ contributor_issues_assigned|safe }};
+		let contributor_issues_opened = {{ contributor_issues_opened|safe }};
+		let contributor_created_at = {{ contributor_created_at|safe }};
+		let contributor_repos = {{ contributor_repos|safe }};
+		let contributor_urls = {{ contributor_urls|safe }};
+
+		document.getElementById("email").innerHTML = contributor_emails[currentIndex];
+		document.getElementById("created").innerHTML = contributor_created_at[currentIndex];
+		document.getElementById("opened").innerHTML = contributor_issues_opened[currentIndex];
+		document.getElementById("assigned").innerHTML = contributor_issues_assigned[currentIndex];
+
+		let url = document.getElementById("name_url")
+		url.innerHTML = contributor_names[currentIndex];
+		url.setAttribute("href", contributor_urls[currentIndex]);
+
+		let table = document.getElementById("contributorRepo");
+		table.innerHTML = "";
+
+		for (let i = 0; i < contributor_repos[currentIndex].length; i++) {
+			let newRow = document.createElement("tr");
+			let newCell = document.createElement("td");
+			let href = document.createElement("a");
+			href.innerHTML = contributor_repos[currentIndex][i];
+			href.setAttribute("href", contributor_urls[currentIndex] + "/" + contributor_repos[currentIndex][i]);
+			newCell.append(href);
+			newRow.appendChild(newCell);
+			table.appendChild(newRow);
+		}
+	}
+</script>
+
+	<!-- Top container -->
+	<nav class="navbar-expand-lg  w3-bar w3-top w3-green w3-large" style="z-index:4">
+		<button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey w3-right"
+			onclick="w3_open();"><i class="fa fa-bars"></i></button>
+		<!-- <span class="w3-bar-item w3-left"><a href="/"><img src="/static/images/gitstats.svg" class="w3-margin-right" style="width:46px"></a></span> -->
+		<div class="navbar-collapse" id="navbarTogglerDemo01">
+			<span class="w3-bar-item w3-left"><a href="/"><img src="/static/images/gitstats.svg" class="w3-margin-right" style="width:46px"></a></span>
+
+			<form class="form-inline my-2 my-lg-0 input-group" form id="form_submit" action="" method="POST" >
+			  <input class="form-control mr-sm-2" name="template_search" type="search" placeholder="Search" aria-label="Search">
+			  <button class="btn btn-outline-success my-2 my-sm-0 bg-light" type="submit" onclick="document.getElementById('form_submit').submit()">Search</button>
+
+			</form>
+		  </div>
+		</nav>
+
+	<!-- Sidebar/menu -->
+	<nav class="w3-sidebar w3-collapse w3-white w3-animate-right" style="right:0%;z-index:3;width:300px;" id="mySidebar"><br>
+		<div class="w3-container w3-row">
+			<div class="w3-col s4">
+				<a href="/"><img src="/static/images/gitstats.svg" class="w3-margin-right" style="width:46px"></a>
+			</div>
+			<div class="w3-col s8 w3-bar">
+				<span>Welcome, <strong>Harsha</strong></span><br>
+				<!-- <a href="#" class="w3-bar-item w3-button"><i class="fa fa-envelope"></i></a> -->
+				<!-- <a href="#" class="w3-bar-item w3-button"><i class="fa fa-user" style="opacity:0.1;"></i></a>
+				<a href="#" class="w3-bar-item w3-button"><i class="fa fa-cog" style="opacity:0.1;"></i></a> -->
+			</div>
+		</div>
+		<hr>
+		<div class="w3-container">
+			<h6>Dashboard</h6>
+		</div>
+		<div class="w3-bar-block">
+			<a class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black"
+				onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i> Close Menu</a>
+				<a onclick="changeGraph('pie')" class="w3-bar-item w3-button w3-padding w3-padding"><img src="/static/images/non_gh_icons/pie-chart.svg" class="w3-margin-right" style="height:18px"> Pie Chart</a>
+				<a onclick="changeGraph('timeline')" class="w3-bar-item w3-button w3-padding"><img src="/static/images/gh_icons/graph.svg" class="w3-margin-right" style="height:18px;"> Timeline</a>
+				<a onclick="" class="w3-bar-item w3-button w3-blue"><img src="/static/images/gh_icons/person.svg" class="w3-margin-right" style="height:18px;">Contributor</a>
+		</div>
+	</nav>
+
+
+	<!-- Overlay effect when opening sidebar on small screens -->
+	<div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer"
+		title="close side menu" id="myOverlay"></div>
+
+	<!-- !PAGE CONTENT! -->
+	<div class="w3-main" style="margin-right:300px;margin-top:43px;">
+
+		<!-- Header -->
+		<header class="w3-container" style="padding-top:22px">
+			<h5><b><img src="/static/images/gh_icons/dashboard.svg" class="w3-margin-right" style="height:22px">Dashboard</b></h5>
+		</header>
+
+		<div class="w3-row-padding w3-margin-bottom">
+			<table class="table">
+					<thead>
+						<tr>
+						<th scope="col">Repository</th>
+						<th scope="col">Owner</th>
+						<th scope="col">Date account created</th>
+						<th scope="col">Last modified</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+						<td>{{ repo_name }}</td>
+						<td>{{ owner_name }}</td>
+						<td>{{ repo_created_date }}</td>
+						<td>{{ repo_updated_date }}</td>
+						</tr>
+						<tr><td colspan="4" class="text-center">{{repo_description}}</td></tr>
+					</tbody>
+			</table>
+		</div>
+
+
+		<div class="w3-panel">
+			<div class="w3-row-padding" style="margin:0 -16px">
+				<!-- Contributor -->
+				<h5>Contributor: </h5>
+				<select id="selector" onchange="updateSelection()">
+					{% for name in contributor_names %}
+					<option value="{{ name }}" {% if forloop.first %}selected{% endif %}>{{ name }}</option>
+					{% endfor %}
+				</select>
+				<div class="w3-container" >
+					<table class="table">
+						<tr>
+							<th>Contributor</th>
+							<th>Email</th>
+							<th>Join date</th>
+							<th>No. of created issues</th>
+							<th>No. of assigned issues</th>
+						</tr>
+						<tr>
+							<td id="name"><a href="" id="name_url"></a></td>
+							<td id="email"></td>
+							<td id="created"></td>
+							<td id="opened"></td>
+							<td id="assigned"></td>
+						</tr>
+					</table>
+					<br>
+
+					<div class="w3-half">
+
+                        <h5>Repos:</h5>
+						<table id="contributorRepo" class="table">
+						</table>
+					</div>
+				</div>
+				<!-- table -->
+				<div class="w3-half">
+					<h5></h5>
+				</div>
+			</div>
+		</div>
+
+	<script>
+		// Get the Sidebar
+		var mySidebar = document.getElementById("mySidebar");
+
+		// Get the DIV with overlay effect
+		var overlayBg = document.getElementById("myOverlay");
+
+		// Toggle between showing and hiding the sidebar, and add overlay effect
+		function w3_open() {
+			if (mySidebar.style.display === 'block') {
+				mySidebar.style.display = 'none';
+				overlayBg.style.display = "none";
+			} else {
+				mySidebar.style.display = 'block';
+				overlayBg.style.display = "block";
+			}
+		}
+
+		// Close the sidebar with the close button
+		function w3_close() {
+			mySidebar.style.display = "none";
+			overlayBg.style.display = "none";
+		}
+	</script>
+
+<!-- Footer -->
+<footer class="page-footer font-small blue">
+  <!-- Copyright -->
+  <div class="footer-copyright text-center py-3">
+	<p>Developed by Team Waterfall</p>
+	  © 2019 Copyright:<a a href="/"> Waterfall</a>
+
+</div>
+  <!-- Copyright -->
+</footer>
+<!-- Footer -->
+
+</body>
+</html>

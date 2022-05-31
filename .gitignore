@@ -1,0 +1,8 @@
+.idea/
+server/server/token_goes_here.py
+server/app/templates/element.html
+server/app/templates/pie_chart.html
+server/app/templates/log_in.html
+server/app/static/assets
+*.pyc 
+.vscode
