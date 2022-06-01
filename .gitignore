@@ -6,3 +6,4 @@ server/app/templates/log_in.html
 server/app/static/assets
 *.pyc 
 .vscode
+Report_Plan.pdf
